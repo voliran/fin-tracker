@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="fragments/layout :: head('404')"></head>
+<body>
+<main class="container py-5">
+    <h1>404 — страница не найдена</h1>
+    <p th:text="${message} ?: 'Запрошенный ресурс не существует'">Не найдено</p>
+    <a class="btn btn-primary" th:href="@{/dashboard}">На дашборд</a>
+</main>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="fragments/layout :: head(${pageTitle})"></head>
+<body>
+<header th:replace="fragments/layout :: nav"></header>
+<div th:replace="fragments/layout :: alerts"></div>
+<main class="container py-4">
+    <h1 class="h3 mb-4">Дашборд</h1>
+    <noscript><p class="alert alert-info">Графики требуют JavaScript. Ключевые метрики доступны ниже.</p></noscript>
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="metric-card">
+                <span>Доходы за месяц</span>
+                <strong th:text="${metrics.totalIncome}">0</strong>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card expense">
+                <span>Расходы за месяц</span>
+                <strong th:text="${metrics.totalExpense}">0</strong>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <span>Баланс</span>
+                <strong th:text="${metrics.balance}">0</strong>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <span>Транзакций</span>
+                <strong th:text="${metrics.transactionCount}">0</strong>
+            </div>
+        </div>
+    </div>
+    <div class="row g-3">
+        <div class="col-lg-7">
+            <div class="panel">
+                <h2 class="h5">Тренд за 6 месяцев</h2>
+                <canvas id="trendChart" height="140"></canvas>
+                <table class="table table-sm mt-3" id="trend-fallback">
+                    <thead><tr><th>Месяц</th><th>Доход</th><th>Расход</th></tr></thead>
+                    <tbody>
+                    <tr th:each="p : ${metrics.monthlyTrend}">
+                        <td th:text="${p.label}"></td>
+                        <td th:text="${p.income}"></td>
+                        <td th:text="${p.expense}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="panel">
+                <h2 class="h5">Расходы по категориям</h2>
+                <canvas id="expenseChart" height="180"></canvas>
+                <ul class="mt-3">
+                    <li th:each="c : ${metrics.expenseByCategory}" th:text="${c.name + ': ' + c.value}"></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="fragments/layout :: footer"></footer>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    window.FINTRACKER_METRICS = /*[[${metrics}]]*/ {};
+</script>
+<script th:src="@{/js/dashboard.js}"></script>
+</body>
+</html>

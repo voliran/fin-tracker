@@ -1,0 +1,94 @@
+:root {
+    --bg: #f4f7f6;
+    --ink: #14342b;
+    --accent: #0f766e;
+    --accent-dark: #115e59;
+    --card: #ffffff;
+}
+
+html, body {
+    background: var(--bg);
+    color: var(--ink);
+    min-height: auto;
+}
+
+.app-header {
+    background: linear-gradient(90deg, #0f766e, #134e4a);
+}
+
+.app-header .navbar-brand,
+.app-header .nav-link,
+.app-header .navbar-toggler {
+    color: #fff !important;
+}
+
+.app-header .nav-link:hover {
+    opacity: 0.85;
+}
+
+.app-footer {
+    color: #5b6b66;
+    font-size: 0.9rem;
+}
+
+.panel {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 8px 24px rgba(15, 118, 110, 0.08);
+}
+
+.metric-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 1rem 1.2rem;
+    box-shadow: 0 8px 24px rgba(15, 118, 110, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.metric-card span {
+    color: #5b6b66;
+    font-size: 0.9rem;
+}
+
+.metric-card strong {
+    font-size: 1.4rem;
+    color: var(--accent-dark);
+}
+
+.metric-card.expense strong {
+    color: #b91c1c;
+}
+
+.btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.btn-primary:hover {
+    background: var(--accent-dark);
+    border-color: var(--accent-dark);
+}
+
+.auth-body {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at top, #99f6e4, #f4f7f6 55%);
+}
+
+.auth-card {
+    width: min(420px, 92vw);
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 40px rgba(15, 118, 110, 0.15);
+}
+
+@media (max-width: 768px) {
+    .metric-card strong {
+        font-size: 1.2rem;
+    }
+}

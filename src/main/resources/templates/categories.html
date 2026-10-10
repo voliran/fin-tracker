@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="fragments/layout :: head(${pageTitle})"></head>
+<body>
+<header th:replace="fragments/layout :: nav"></header>
+<div th:replace="fragments/layout :: alerts"></div>
+<main class="container py-4">
+    <h1 class="h3 mb-4">Категории</h1>
+    <div class="panel mb-4">
+        <form th:action="${form.id != null} ? @{/categories/{id}(id=${form.id})} : @{/categories}"
+              th:object="${form}" method="post" class="row g-3 needs-validation" novalidate>
+            <input type="hidden" th:field="*{id}">
+            <div class="col-md-5">
+                <label class="form-label">Название</label>
+                <input class="form-control" th:field="*{name}" required th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Ошибка</div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Тип</label>
+                <select class="form-select" th:field="*{type}">
+                    <option th:each="t : ${types}" th:value="${t}" th:text="${t.name() == 'INCOME'} ? 'Доходная' : 'Расходная'"></option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button class="btn btn-primary w-100" type="submit">Сохранить</button>
+            </div>
+        </form>
+    </div>
+    <div class="panel">
+        <div class="table-responsive">
+            <table class="table">
+                <thead><tr><th>Название</th><th>Тип</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="c : ${categories}">
+                    <td th:text="${c.name}"></td>
+                    <td th:text="${c.type.name() == 'INCOME'} ? 'Доход' : 'Расход'"></td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" th:href="@{/categories/{id}/edit(id=${c.id})}">Изменить</a>
+                        <form class="d-inline" th:action="@{/categories/{id}/delete(id=${c.id})}" method="post">
+                            <button class="btn btn-sm btn-outline-danger" type="submit">Удалить</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html>

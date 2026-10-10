@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="fragments/layout :: head(${pageTitle})"></head>
+<body>
+<header th:replace="fragments/layout :: nav"></header>
+<div th:replace="fragments/layout :: alerts"></div>
+<main class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">Транзакции</h1>
+        <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#txModal">Добавить</button>
+    </div>
+    <div class="panel mb-4">
+        <h2 class="h5" th:text="${form.id != null} ? 'Редактирование' : 'Новая транзакция'">Форма</h2>
+        <form id="tx-form" th:action="${form.id != null} ? @{/transactions/{id}(id=${form.id})} : @{/transactions}"
+              th:object="${form}" method="post" class="row g-3 needs-validation" novalidate>
+            <input type="hidden" th:field="*{id}">
+            <div class="col-md-2">
+                <label class="form-label">Сумма</label>
+                <input class="form-control" type="number" step="0.01" min="0.01" th:field="*{amount}" required
+                       th:classappend="${#fields.hasErrors('amount')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}">Ошибка</div>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Тип</label>
+                <select class="form-select" th:field="*{type}" required>
+                    <option th:each="t : ${types}" th:value="${t}" th:text="${t == T(com.globusit.fintracker.domain.OperationType).INCOME} ? 'Доход' : 'Расход'"></option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Категория</label>
+                <select class="form-select" th:field="*{categoryId}" required
+                        th:classappend="${#fields.hasErrors('categoryId')} ? 'is-invalid'">
+                    <option value="">Выберите</option>
+                    <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name + ' (' + c.type + ')'}" th:data-type="${c.type}"></option>
+                </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}">Ошибка</div>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Дата</label>
+                <input class="form-control" type="date" th:field="*{date}" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Описание</label>
+                <input class="form-control" th:field="*{description}">
+            </div>
+            <div class="col-12">
+                <button class="btn btn-primary" type="submit">Сохранить</button>
+            </div>
+        </form>
+    </div>
+    <div class="panel">
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Тип</th>
+                    <th>Категория</th>
+                    <th>Описание</th>
+                    <th class="text-end">Сумма</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="tx : ${transactions}">
+                    <td th:text="${tx.date}"></td>
+                    <td>
+                        <span class="badge" th:classappend="${tx.type.name() == 'INCOME'} ? 'bg-success' : 'bg-danger'"
+                              th:text="${tx.type.name() == 'INCOME'} ? 'Доход' : 'Расход'"></span>
+                    </td>
+                    <td th:text="${tx.category.name}"></td>
+                    <td th:text="${tx.description}"></td>
+                    <td class="text-end" th:text="${tx.amount}"></td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" th:href="@{/transactions/{id}/edit(id=${tx.id})}">Изменить</a>
+                        <form class="d-inline" th:action="@{/transactions/{id}/delete(id=${tx.id})}" method="post">
+                            <button class="btn btn-sm btn-outline-danger" type="submit">Удалить</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal fade" id="txModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title h5">Быстрое добавление</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-muted">Работает через AJAX, если JavaScript включён.</p>
+                    <form id="ajax-tx-form" class="needs-validation" novalidate>
+                        <div class="mb-2"><input class="form-control" name="amount" type="number" step="0.01" min="0.01" placeholder="Сумма" required></div>
+                        <div class="mb-2">
+                            <select class="form-select" name="type" required>
+                                <option value="INCOME">Доход</option>
+                                <option value="EXPENSE">Расход</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <select class="form-select" name="categoryId" required>
+                                <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                            </select>
+                        </div>
+                        <div class="mb-2"><input class="form-control" name="date" type="date" required></div>
+                        <div class="mb-2"><input class="form-control" name="description" placeholder="Описание"></div>
+                        <button class="btn btn-primary w-100" type="submit">Сохранить через API</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="fragments/layout :: footer"></footer>
+<script th:src="@{/js/transactions.js}"></script>
+</body>
+</html>

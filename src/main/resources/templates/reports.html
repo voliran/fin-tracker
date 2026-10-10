@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="fragments/layout :: head(${pageTitle})"></head>
+<body>
+<header th:replace="fragments/layout :: nav"></header>
+<div th:replace="fragments/layout :: alerts"></div>
+<main class="container py-4">
+    <h1 class="h3 mb-4">Отчёты</h1>
+    <div class="panel mb-4">
+        <form th:action="@{/reports}" th:object="${form}" method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Период</label>
+                <select class="form-select" th:field="*{periodType}">
+                    <option th:each="p : ${periodTypes}" th:value="${p}"
+                            th:text="${p.name() == 'MONTH'} ? 'Месяц' : (${p.name() == 'QUARTER'} ? 'Квартал' : 'Год')"></option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Год</label>
+                <input class="form-control" type="number" th:field="*{year}" min="2000" max="2100">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Месяц</label>
+                <input class="form-control" type="number" th:field="*{month}" min="1" max="12">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Квартал</label>
+                <input class="form-control" type="number" th:field="*{quarter}" min="1" max="4">
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button class="btn btn-primary w-100" type="submit">Предпросмотр</button>
+            </div>
+        </form>
+        <div class="mt-3 d-flex gap-2 flex-wrap">
+            <a class="btn btn-outline-primary"
+               th:href="@{/api/reports/export(format='pdf', periodType=${form.periodType}, year=${form.year}, month=${form.month}, quarter=${form.quarter})}">Скачать PDF</a>
+            <a class="btn btn-outline-success"
+               th:href="@{/api/reports/export(format='xlsx', periodType=${form.periodType}, year=${form.year}, month=${form.month}, quarter=${form.quarter})}">Скачать Excel</a>
+        </div>
+    </div>
+    <div class="row g-3 mb-4" th:if="${preview}">
+        <div class="col-md-4"><div class="metric-card"><span>Доходы</span><strong th:text="${preview.totalIncome}"></strong></div></div>
+        <div class="col-md-4"><div class="metric-card expense"><span>Расходы</span><strong th:text="${preview.totalExpense}"></strong></div></div>
+        <div class="col-md-4"><div class="metric-card"><span>Баланс</span><strong th:text="${preview.balance}"></strong></div></div>
+    </div>
+    <div class="panel mb-4" th:if="${preview}">
+        <h2 class="h5">Предпросмотр <span class="text-muted small" th:text="${preview.periodStart + ' — ' + preview.periodEnd}"></span></h2>
+        <div class="table-responsive">
+            <table class="table">
+                <thead><tr><th>Дата</th><th>Тип</th><th>Категория</th><th>Описание</th><th class="text-end">Сумма</th></tr></thead>
+                <tbody>
+                <tr th:each="tx : ${preview.transactions}">
+                    <td th:text="${tx.date}"></td>
+                    <td th:text="${tx.type}"></td>
+                    <td th:text="${tx.category.name}"></td>
+                    <td th:text="${tx.description}"></td>
+                    <td class="text-end" th:text="${tx.amount}"></td>
+                </tr>
+                <tr th:if="${preview.transactions.isEmpty()}">
+                    <td colspan="5" class="text-muted">Нет транзакций за выбранный период</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="panel">
+        <h2 class="h5">История генерации</h2>
+        <ul class="list-group">
+            <li class="list-group-item" th:each="r : ${history}"
+                th:text="${r.generatedAt + ' · ' + r.periodType + ' · ' + r.periodStart + ' — ' + r.periodEnd}"></li>
+            <li class="list-group-item text-muted" th:if="${history.isEmpty()}">Пока нет выгрузок</li>
+        </ul>
+    </div>
+</main>
+<footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html>
